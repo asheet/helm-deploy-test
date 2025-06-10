@@ -1,5 +1,5 @@
 ---
-name: citi-deploy
+name: deploy
 description: Deploy a model to a OpenShift cluster using Helm.
 version: latest
 image_repository: quay.io
