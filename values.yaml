@@ -1,0 +1,9 @@
+---
+name: citi-deploy
+description: Deploy a model to a OpenShift cluster using Helm.
+version: latest
+image_repository: quay.io
+image_namespace: rhoai-mlops
+autoscaling: false
+canary: {}
+  # trafficPercent: 10
