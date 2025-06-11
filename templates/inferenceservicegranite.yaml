@@ -2,12 +2,11 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    openshift.io/display-name: granite3.2-8b
+    openshift.io/display-name: {{ .Values.inferenceservice.name }}
     serving.knative.openshift.io/enablePassthrough: 'true'
     sidecar.istio.io/inject: 'true'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
-    argocd.argoproj.io/sync-wave: "2"
-  name: granite32-8b
+  name: {{ .Values.inferenceservice.name }}
   finalizers:
     - inferenceservice.finalizers
   labels:
@@ -29,7 +28,7 @@ spec:
           cpu: '2'
           memory: 8Gi
           nvidia.com/gpu: '1'
-      runtime: granite32-8b
+      runtime: {{ .Values.runtime.name }}
       storageUri: 'oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.2-8b-instruct'
     containerConcurrency: 1
     tolerations:

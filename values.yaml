@@ -1,5 +1,8 @@
----
-name: deploy
+inferenceservice:
+  name: granite3.2-8b
+runtime:
+  name: runtime-granite32-8b
+
 description: Deploy a model to a OpenShift cluster using Helm.
 version: latest
 image_repository: quay.io
