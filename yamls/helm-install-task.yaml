@@ -1,0 +1,51 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: helm-install
+  namespace: test
+spec:
+  description: This task installs a Helm chart from a given repository path.
+  params:
+    - default: my-release
+      description: The name of the Helm release.
+      name: release_name
+      type: string
+    - default: default
+      description: The namespace to install the Helm release into.
+      name: release_namespace
+      type: string
+    - default: ./helm-chart
+      description: The path to the Helm chart within the source workspace.
+      name: chart_path
+      type: string
+    - default: values.yaml
+      description: The path to the values file within the source workspace.
+      name: values_file
+      type: string
+  steps:
+    - computeResources: {}
+      image: 'docker.io/alpine/helm:latest'
+      name: helm-install
+      script: |
+        #!/bin/sh
+        set -e # Exit on error
+
+        CHART_FULL_PATH="$(workspaces.source.path)/$(params.chart_path)"
+        VALUES_FULL_PATH="$(workspaces.source.path)/$(params.values_file)"
+
+        echo "Deploying Helm chart from: ${CHART_FULL_PATH}"
+        echo "Release Name: $(params.release_name)"
+        echo "Namespace: $(params.release_namespace)"
+        echo "Using Values File: ${VALUES_FULL_PATH}"
+
+        helm upgrade --install \
+          --namespace $(params.release_namespace) \
+          --create-namespace \
+          -f "${VALUES_FULL_PATH}" \
+          "$(params.release_name)" \
+          "${CHART_FULL_PATH}"
+
+        echo "Helm deployment complete!"
+  workspaces:
+    - description: The workspace containing the cloned git repo.
+      name: source

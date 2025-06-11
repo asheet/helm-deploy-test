@@ -1,0 +1,62 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: git-clone-and-helm-install
+  namespace: test
+spec:
+  params:
+    - description: The URL of the git repository to clone.
+      name: repo-url
+      type: string
+    - default: main
+      description: The git branch to clone.
+      name: branch-name
+      type: string
+    - default: my-app
+      description: The name of the Helm release.
+      name: release-name
+      type: string
+    - description: The namespace to deploy the Helm chart into
+      name: release-namespace
+      type: string
+    - default: charts/my-app
+      description: The path to the helm chart within the repository.
+      name: chart-path
+      type: string
+    - default: values.yaml
+      description: The path to the values file for the helm chart.
+      name: values-file
+      type: string
+  tasks:
+    - name: clone-repo
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.branch-name)
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: install-chart
+      params:
+        - name: release_name
+          value: $(params.release-name)
+        - name: chart_path
+          value: $(params.chart-path)
+        - name: values_file
+          value: $(params.values-file)
+        - name: release_namespace
+          value: $(params.release-namespace)
+      runAfter:
+        - clone-repo
+      taskRef:
+        kind: Task
+        name: helm-install
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace
