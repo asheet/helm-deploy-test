@@ -1,5 +1,8 @@
 inferenceservice:
   name: granite3.2-8b
+  storage:
+    name: models/llama3
+    key: aws-connection-minio-storage
 runtime:
   name: runtime-granite32-8b
 
